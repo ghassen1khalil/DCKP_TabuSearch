@@ -54,7 +54,7 @@ void main( int argc,char *argv[])
 		fclose(fw);
 
 		desallouer_prob(dckp);
-		//system("pause");
+		system("pause");
 	}
 	fclose(ff);
 	

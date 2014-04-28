@@ -40,6 +40,10 @@ solution * build_init_sol(problem *pb);
 
 void recherche_tabou(solution *sol, problem *pb, int *r);
 
+void generer_sol(solution *sol, problem *pb, int *r,int ind);
+
+int nbSolPossible(solution *sol, problem *pb);
+
 void display_sol(solution *s, problem *pb);
 
 
