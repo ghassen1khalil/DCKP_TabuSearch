@@ -12,77 +12,53 @@ int nbSolPossible(solution *sol, problem *pb)
 	return nbSol;
 }
 
-void generer_sol(solution *sol, problem *pb, int *r,int ind)
+solution* generer_sol(solution *sol, problem *pb,int ind)
 {
-	solution *bs,*si;
-	int c,i, j, bi, bj, k;
-	bs=build_empty_sol(pb);
+	int i,j,k,bi,bj;
+	solution * bs,*si;
 	si = build_empty_sol(pb);
-	copy_sol(sol,bs,pb);
-	*r=0;
-		do
+	bs = build_empty_sol(pb);
+	bi = -1;
+	for (i=ind;i<pb->n;i++)
+		for (j=i+1;j<pb->n;j++)
 		{
-			(*r)++;
-			//printf("iter %d\n",r);
-			bi=bj=-1;
-			for(i=ind;i<pb->n-1;i++)
-			{
-				for(j=i+1;j<pb->n;j++)
+			if ((sol->x[i] == 0) 
+				&&(sol->x[j] == 1)
+				&&(sol->V - pb->v[i] + pb->v[j] <= pb->C)
+				&&(sol->P - pb->p[i] + pb->p[j])){
+			
+				for(k=0;k<pb->n;k++)
+					if(k!=i && sol->x[k]==1 && pb->e[j][k]==1)
+						break;
+				if (k==pb->n)
 				{
-					if(sol->x[i]==1 && sol->x[j]==0 
-						&& sol->V - pb->v[i] + pb->v[j] <= pb->C 
-						&& sol->P - pb->p[i] + pb->p[j] > bs->P)
-					{
-						for(k=0;k<pb->n;k++)
-							if(k!=i && sol->x[k]==1 && pb->e[j][k]==1)
-								break;
-						if(k==pb->n)
-						{
-							bs->V = sol->V - pb->v[i] + pb->v[j];
-							bs->P = sol->P - pb->p[i] + pb->p[j];
-							bi = i;
-							bj = j;
-							goto fin;
-						}
-					}
-					else if(sol->x[i]==0 && sol->x[j]==1 
-						&& sol->V - pb->v[j] + pb->v[i] <= pb->C 
-						&& sol->P - pb->p[j] + pb->p[i] > bs->P)
-					{
-						for(k=0;k<pb->n;k++)
-							if(k!=j && sol->x[k]==1 && pb->e[i][k]==1)
-								break;
-						if(k==pb->n)
-						{
-							bs->V = sol->V - pb->v[j] + pb->v[i];
-							bs->P = sol->P - pb->p[j] + pb->p[i];
-							bi = i;
-							bj = j;
-							goto fin;
-						}
-					}
+					si->V = sol->V - pb->v[i] + pb->v[j];
+					si->P = sol->P - pb->p[i] + pb->p[j];
+					bi=i; bj=j;
+					goto fin;
+
 				}
+
 			}
-			fin:
-			if(bi>=0)
+		}
+fin:
+		if (bi>0)
+		{
+			if ((sol->x[bi] == 1) && (sol->x[bj] == 0))
 			{
-				if(sol->x[bi]==1 && sol->x[bj]==0)
-				{
-					bs->x[bi]=sol->x[bi]=0;
-					bs->x[bj]=sol->x[bj]=1;
-				}
-				else
-				{
-					bs->x[bi]=sol->x[bi]=1;
-					bs->x[bj]=sol->x[bj]=0;
-				}
-				sol->P=bs->P;
-				sol->V=bs->V;
-				//copy_sol(bs,sol,pb);
+				si->x[bi] = 0 ;
+				si->x[bj] = 1 ;
+			}
+			else
+			{
+				si->x[bi] = 1 ;
+				si->x[bj] = 0 ;
 			}
 
-		}while(bi>=0); 
-		desallouer_sol(bs);
+		}
+
+		return si;
+	
 }
 
 void recherche_tabou(solution *sol, problem *pb, int *r)
@@ -96,8 +72,8 @@ void recherche_tabou(solution *sol, problem *pb, int *r)
 	tabSol = (solution**)malloc(nbS*sizeof(solution));
 	for (i=0;i<nbS;i++)
 	{
-		generer_sol(sol,pb,r,i);
-		tabSol[i] = sol;
+		//generer_sol(sol,pb,r,i);
+		tabSol[i] = generer_sol(sol,pb,i);
 		if (tabSol[i]->P >bs->P)
 			copy_sol(tabSol[i],bs,pb);
 		
@@ -105,8 +81,15 @@ void recherche_tabou(solution *sol, problem *pb, int *r)
 	/*for (j=0;j<nbS;j++)
 		for (i=0;i<pb->n;i++)
 			printf("case num %d de la solution %d = %d\n",i,j,tabSol[j]->x[i]);*/
-	for (j=0;j<nbS;j++)
-		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);
+	/*for (j=0;j<nbS;j++)
+		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);*/
+	for (i=0;i<pb->n;i++)
+	{
+		printf("sol1 : x[%d] = %d ",i,tabSol[0]->x[i]);
+		printf("\n");
+		printf("sol2 : x[%d] = %d ",i,tabSol[1]->x[i]);
+		printf("\n");
+	}
 
 
 }
