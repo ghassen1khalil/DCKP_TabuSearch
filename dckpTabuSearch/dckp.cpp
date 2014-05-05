@@ -12,7 +12,7 @@ int nbSolPossible(solution *sol, problem *pb)
 	return nbSol;
 }
 
-void generer_sol(solution *sol, problem *pb, int *r,int ind)
+solution * generer_sol(solution *sol, problem *pb, int *r,int ind)
 {
 	solution *bs,*si;
 	int c,i, j, bi, bj, k;
@@ -78,6 +78,7 @@ void generer_sol(solution *sol, problem *pb, int *r,int ind)
 				}
 				sol->P=bs->P;
 				sol->V=bs->V;
+				return sol;
 				//copy_sol(bs,sol,pb);
 			}
 
@@ -87,26 +88,35 @@ void generer_sol(solution *sol, problem *pb, int *r,int ind)
 
 void recherche_tabou(solution *sol, problem *pb, int *r)
 {
-	int i,j;
+	const int ITERMAX =  100;
+	int i,j,isa,amel;
+	isa = amel = 0;
 	int nbS = nbSolPossible(sol,pb);
 	solution **tabSol;
-	solution *bs;
+	solution *bs, *si;
 	bs = build_empty_sol(pb);
 	copy_sol(sol,bs,pb);
 	tabSol = (solution**)malloc(nbS*sizeof(solution));
+	do
 	for (i=0;i<nbS;i++)
-	{
-		generer_sol(sol,pb,r,i);
-		tabSol[i] = sol;
-		if (tabSol[i]->P >bs->P)
-			copy_sol(tabSol[i],bs,pb);
+		{
+			si = generer_sol(sol,pb,r,i);
+			//printf(" profit = %d\n",sol->P);
+			tabSol[i] = si;
+			if (tabSol[i]->P >bs->P)
+			{
+				amel++;
+				copy_sol(tabSol[i],bs,pb);
+			}	
+			else isa ++;
 		
-	}
+		}
+	while (isa <= ITERMAX);
 	/*for (j=0;j<nbS;j++)
 		for (i=0;i<pb->n;i++)
 			printf("case num %d de la solution %d = %d\n",i,j,tabSol[j]->x[i]);*/
 	for (j=0;j<nbS;j++)
-		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);
+		printf("le profit de la sol %d est %d\n",j,tabSol[j]->P);
 
 
 }
