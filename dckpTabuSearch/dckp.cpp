@@ -12,7 +12,7 @@ int nbSolPossible(solution *sol, problem *pb)
 	return nbSol;
 }
 
-solution* generer_sol(solution *sol, problem *pb,int ind)
+void generer_sol(solution *sol, problem *pb, int *r,int ind)
 {
 	int i,j,k,bi,bj;
 	solution * bs,*si;
@@ -27,35 +27,37 @@ solution* generer_sol(solution *sol, problem *pb,int ind)
 				&&(sol->V - pb->v[i] + pb->v[j] <= pb->C)
 				&&(sol->P - pb->p[i] + pb->p[j])){
 			
-				for(k=0;k<pb->n;k++)
-					if(k!=i && sol->x[k]==1 && pb->e[j][k]==1)
-						break;
+						for(k=0;k<pb->n;k++)
+							if(k!=i && sol->x[k]==1 && pb->e[j][k]==1)
+								break;
 				if (k==pb->n)
-				{
+						{
 					si->V = sol->V - pb->v[i] + pb->v[j];
 					si->P = sol->P - pb->p[i] + pb->p[j];
 					bi=i; bj=j;
-					goto fin;
+							goto fin;
 
-				}
+						}
 
-			}
-		}
-fin:
+					}
+						}
+			fin:
 		if (bi>0)
-		{
-			if ((sol->x[bi] == 1) && (sol->x[bj] == 0))
 			{
+			if ((sol->x[bi] == 1) && (sol->x[bj] == 0))
+				{
 				si->x[bi] = 0 ;
 				si->x[bj] = 1 ;
-			}
-			else
-			{
+				}
+				else
+				{
 				si->x[bi] = 1 ;
 				si->x[bj] = 0 ;
+				}
+				sol->P=bs->P;
+				sol->V=bs->V;
+				//copy_sol(bs,sol,pb);
 			}
-
-		}
 
 		return si;
 	
@@ -63,33 +65,34 @@ fin:
 
 void recherche_tabou(solution *sol, problem *pb, int *r)
 {
-	int i,j;
+	const int ITERMAX =  100;
+	int i,j,isa,amel;
+	isa = amel = 0;
 	int nbS = nbSolPossible(sol,pb);
 	solution **tabSol;
-	solution *bs;
+	solution *bs, *si;
 	bs = build_empty_sol(pb);
 	copy_sol(sol,bs,pb);
 	tabSol = (solution**)malloc(nbS*sizeof(solution));
+	do
 	for (i=0;i<nbS;i++)
 	{
-		//generer_sol(sol,pb,r,i);
-		tabSol[i] = generer_sol(sol,pb,i);
+		generer_sol(sol,pb,r,i);
+		tabSol[i] = sol;
 		if (tabSol[i]->P >bs->P)
+			{
+				amel++;
 			copy_sol(tabSol[i],bs,pb);
+			}	
+			else isa ++;
 		
 	}
+	while (isa <= ITERMAX);
 	/*for (j=0;j<nbS;j++)
 		for (i=0;i<pb->n;i++)
 			printf("case num %d de la solution %d = %d\n",i,j,tabSol[j]->x[i]);*/
-	/*for (j=0;j<nbS;j++)
-		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);*/
-	for (i=0;i<pb->n;i++)
-	{
-		printf("sol1 : x[%d] = %d ",i,tabSol[0]->x[i]);
-		printf("\n");
-		printf("sol2 : x[%d] = %d ",i,tabSol[1]->x[i]);
-		printf("\n");
-	}
+	for (j=0;j<nbS;j++)
+		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);
 
 
 }

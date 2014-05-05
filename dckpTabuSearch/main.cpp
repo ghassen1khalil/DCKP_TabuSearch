@@ -12,7 +12,7 @@ void main( int argc,char *argv[])
 	double objval;
 	errno_t err;
 	FILE *ff,*fw;//Flux d'ouverture des fichiers
-	if((err=fopen_s(&ff,"dckp_instances_liste.txt","r"))!=0)
+	if((err=fopen_s(&ff,"dckp_instances_list.txt","r"))!=0)
 		printf("Erreur d'ouverture du fichier dckp_instances_list.txt...\n");
 	
 	///////
