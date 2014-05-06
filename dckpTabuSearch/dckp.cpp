@@ -12,7 +12,7 @@ int nbSolPossible(solution *sol, problem *pb)
 	return nbSol;
 }
 
-void generer_sol(solution *sol, problem *pb, int *r,int ind)
+solution* generer_sol(solution *sol, problem *pb,int ind)
 {
 	int i,j,k,bi,bj;
 	solution * bs,*si;
@@ -82,7 +82,7 @@ void recherche_tabou(solution *sol, problem *pb, int *r)
 		if (tabSol[i]->P >bs->P)
 			{
 				amel++;
-			copy_sol(tabSol[i],bs,pb);
+				copy_sol(tabSol[i],bs,pb);
 			}	
 			else isa ++;
 		
