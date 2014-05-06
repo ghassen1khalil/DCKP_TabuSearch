@@ -58,7 +58,7 @@ solution* generer_sol(solution *sol, problem *pb,int ind)
 				sol->V=bs->V;
 				//copy_sol(bs,sol,pb);
 			}
-
+		//printf("profit = %d\n",si->P);
 		return si;
 	
 }
@@ -77,8 +77,9 @@ void recherche_tabou(solution *sol, problem *pb, int *r)
 	do
 	for (i=0;i<nbS;i++)
 	{
-		generer_sol(sol,pb,r,i);
-		tabSol[i] = sol;
+		si = generer_sol(sol,pb,i);
+		//printf("profit = %d\n",si->P);
+		tabSol[i] = si;
 		if (tabSol[i]->P >bs->P)
 			{
 				amel++;
@@ -91,8 +92,8 @@ void recherche_tabou(solution *sol, problem *pb, int *r)
 	/*for (j=0;j<nbS;j++)
 		for (i=0;i<pb->n;i++)
 			printf("case num %d de la solution %d = %d\n",i,j,tabSol[j]->x[i]);*/
-	for (j=0;j<nbS;j++)
-		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);
+	/*for (j=0;j<nbS;j++)
+		printf("le volume de la sol %d est %d\n",j,tabSol[j]->V);*/
 
 
 }
